@@ -3,7 +3,7 @@ const Mongoose = require("mongoose");
 const moduleSchema = Mongoose.Schema({
   name: String,
   stratedAt: Date,
-  EndsAt: Date,
+  endsAt: Date,
   activeSprint: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: "Sprint",

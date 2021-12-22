@@ -1,18 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Bug = require("./schema/Bug");
-const Module = require("./schema/Module");
-const Project = require("./schema/Project");
-const Sprint = require("./schema/Sprint");
-const Task = require("./schema/Task");
-const User = require("./schema/User");
+const { graphqlHTTP } = require("express-graphql");
+const Schema = require("./graphql/schema/index");
 
 const app = express();
 
-app.get("/", (req, res) => {
-    
-    res.send("done")
-});
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: Schema,
+    graphiql: true,
+  })
+);
 
 mongoose
   .connect(

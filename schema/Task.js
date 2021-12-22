@@ -7,7 +7,7 @@ const taskSchema = Mongoose.Schema({
     type: Mongoose.SchemaTypes.ObjectId,
     ref: "User",
   },
-  Bugs: [
+  bugs: [
     {
       type: Mongoose.SchemaTypes.ObjectId,
       ref: "Bug",

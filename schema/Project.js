@@ -1,5 +1,4 @@
 const Mongoose = require("mongoose");
-const { schema } = require("./User");
 
 const projectSchema = Mongoose.Schema({
   name: String,
@@ -14,7 +13,7 @@ const projectSchema = Mongoose.Schema({
       ref: "User",
     },
   ],
-  Modules: [
+  modules: [
     {
       type: Mongoose.Schema.Types.ObjectId,
       ref: "Module",
