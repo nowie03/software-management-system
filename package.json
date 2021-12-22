@@ -1,0 +1,28 @@
+{
+  "name": "software-management-system",
+  "version": "1.0.0",
+  "description": "Online software management tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nowie03/software-management-system.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nowie03/software-management-system/issues"
+  },
+  "homepage": "https://github.com/nowie03/software-management-system#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "express": "^4.17.2",
+    "express-graphql": "^0.12.0",
+    "mongoose": "^6.1.3"
+  }
+}

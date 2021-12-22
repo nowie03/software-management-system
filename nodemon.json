@@ -1,0 +1,8 @@
+{
+  "env": {
+    "MONGO_USER": "hackaholics4",
+    "MONGO_PASSWORD": "DaggUs4%23",
+    "DATABASE_NAME": "software-management-system",
+    "PORT": "5000"
+  }
+}
