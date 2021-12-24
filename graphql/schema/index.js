@@ -4,6 +4,7 @@ const {
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLBoolean,
 } = require("graphql");
 const { createBug, updateBug } = require("../resolvers/Bug");
 const {
@@ -27,6 +28,11 @@ const {
   getCompletedSprints,
   createSprint,
   updateSprint,
+  setAsActiveSprint,
+  addToCompletedSprints,
+  addToUpcomingSprints,
+  removeFromUpcomingSprints,
+  truncateSprint,
 } = require("../resolvers/Sprint");
 const {
   getTasks,
@@ -35,17 +41,17 @@ const {
   createTask,
   truncateTask,
 } = require("../resolvers/Task");
-const { getUser, createUser } = require("../resolvers/user");
-const BugType = require("./BugType");
+const { getUser, createUser, updateUser } = require("../resolvers/user");
+const BugType = require("./BugType").BugType;
 const BugInputType = require("./inputTypes/BugInputType");
 const ModuleInputType = require("./inputTypes/ModuleInputType");
 const ProjectInputType = require("./inputTypes/ProjectInputType");
 const SprintInputType = require("./inputTypes/SprintInputType");
 const TaskInputType = require("./inputTypes/TaskInputType");
-const ModuleType = require("./ModuleType");
-const ProjectType = require("./ProjectType");
-const SprintType = require("./SprintType");
-const TaskType = require("./TaskType");
+const ModuleType = require("./ModuleType").ModuleType;
+const ProjectType = require("./ProjectType").ProjectType;
+const SprintType = require("./SprintType").SprintType;
+const TaskType = require("./TaskType").TaskType;
 const UserType = require("./UserType");
 
 const RootQuery = new GraphQLObjectType({
@@ -55,7 +61,7 @@ const RootQuery = new GraphQLObjectType({
     getUser: {
       type: UserType,
       args: {
-        username: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: getUser,
@@ -80,6 +86,7 @@ const RootQuery = new GraphQLObjectType({
       args: {
         projectId: { type: GraphQLString },
         moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: getSprint,
     },
@@ -108,6 +115,7 @@ const RootQuery = new GraphQLObjectType({
       type: ModuleType,
       args: {
         moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        projectId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: getModule,
     },
@@ -137,9 +145,24 @@ const RootMutation = new GraphQLObjectType({
       type: UserType,
       args: {
         username: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
+        workedOn: { type: new GraphQLList(GraphQLString) },
+        ledOn: { type: new GraphQLList(GraphQLString) },
       },
       resolve: createUser,
+    },
+    updateUser: {
+      type: UserType,
+      args: {
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        workedOn: { type: new GraphQLList(GraphQLString) },
+        ledOn: { type: new GraphQLList(GraphQLString) },
+        userId: {type: new GraphQLNonNull(GraphQLString)}
+      },
+      resolve: updateUser,
     },
     createProject: {
       type: ProjectType,
@@ -160,6 +183,7 @@ const RootMutation = new GraphQLObjectType({
       type: ProjectType,
       args: {
         projectId: { type: new GraphQLNonNull(GraphQLString) },
+        userId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: truncateProject,
     },
@@ -174,12 +198,16 @@ const RootMutation = new GraphQLObjectType({
       type: ModuleType,
       args: {
         type: { type: ModuleInputType },
+        moduleId: {type :new GraphQLNonNull(GraphQLString)}
       },
       resolve: updateModule,
     },
     truncateModule: {
-      type:ModuleType,
-      args: { moduleId: { type: new GraphQLNonNull(GraphQLString) } },
+      type: ModuleType,
+      args: {
+        moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        projectId: { type: new GraphQLNonNull(GraphQLString) },
+      },
       resolve: truncateModule,
     },
     createSprint: {
@@ -193,8 +221,50 @@ const RootMutation = new GraphQLObjectType({
       type: SprintType,
       args: {
         type: { type: SprintInputType },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: updateSprint,
+    },
+    setAsActiveSprint: {
+      type: SprintType,
+      args: {
+        moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: setAsActiveSprint,
+    },
+    addToCompletedSprints: {
+      type: SprintType,
+      args: {
+        moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: addToCompletedSprints,
+    },
+    addToUpcomingSprints: {
+      type: SprintType,
+      args: {
+        moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: addToUpcomingSprints,
+    },
+    removeFromUpcomingSprints: {
+      type: SprintType,
+      args: {
+        moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: removeFromUpcomingSprints,
+    },
+    truncateSprint: {
+      type: SprintType,
+      args: {
+        moduleId: { type: new GraphQLNonNull(GraphQLString) },
+        sprintId: { type: new GraphQLNonNull(GraphQLString) },
+        shouldMigrateTasks: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: truncateSprint,
     },
     createTask: {
       type: TaskType,
@@ -207,6 +277,7 @@ const RootMutation = new GraphQLObjectType({
       type: TaskType,
       args: {
         type: { type: TaskInputType },
+        taskId: { type: new GraphQLNonNull(GraphQLString) },
       },
       resolve: updateTask,
     },
@@ -229,6 +300,7 @@ const RootMutation = new GraphQLObjectType({
       type: BugType,
       args: {
         type: { type: BugInputType },
+        bugId: {type:new GraphQLNonNull(GraphQLString)}
       },
       resolve: updateBug,
     },

@@ -1,7 +1,7 @@
 const Mongoose = require("mongoose");
 
 const bugSchema = Mongoose.Schema({
-  debguugedBy: {
+  debuggedBy: {
     type: Mongoose.SchemaTypes.ObjectId,
     ref: "User",
   },

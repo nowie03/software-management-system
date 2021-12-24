@@ -1,9 +1,13 @@
 const {
   GraphQLObjectType,
   GraphQLString,
-   GraphQLNonNull,
+  GraphQLNonNull,
   GraphQLList,
 } = require("graphql");
+const ProjectType = require("./ProjectType").ProjectType;
+const SprintType = require("./SprintType").SprintType;
+const Project = require("../../schema/Project")
+const Sprint=require("../../schema/Sprint")
 
 const ModuleType = new GraphQLObjectType({
   name: "ModuleType",
@@ -13,14 +17,36 @@ const ModuleType = new GraphQLObjectType({
     name: { type: new GraphQLNonNull(GraphQLString) },
     stratedAt: { type: GraphQLString },
     endsAt: { type: GraphQLString },
-    activeSprint: { type: new GraphQLNonNull(GraphQLString) },
-    completedSprints: { type: new GraphQLList(GraphQLString) },
-    upcomingSprints: { type: new GraphQLList(GraphQLString) },
-    projectID: { type: new GraphQLNonNull(GraphQLString) },
+    activeSprint: {
+      type: SprintType,
+      resolve: async (moduleType) => { 
+        let res = await Sprint.findById(moduleType.activeSprint).populate("module project tasks");
+        return res;
+      }},
+    completedSprints: {
+      type: new GraphQLList(SprintType),
+      resolve: async (moduleType) => { 
+        let res = moduleType.completedSprints.map(async sprint => { 
+          return await Sprint.findById(sprint).populate("module project tasks");
+        })
+      }},
+    upcomingSprints: { type: new GraphQLList(SprintType),
+      resolve: async (moduleType) => {
+        let res = moduleType.completedSprints.map(async sprint => {
+          return await Sprint.findById(sprint).populate("module project tasks");
+        })
+      }
+    },
+    project: {
+      type: new GraphQLNonNull(ProjectType),
+      resolve: async (moduleType) => {
+        let res = await Project.findById(moduleType.project.id).populate("leadId team modules")
+        return res;
+      }},
   }),
 });
 
-module.exports = ModuleType;
+module.exports.ModuleType = ModuleType ;
 
 //     type Module{
 //         id:String

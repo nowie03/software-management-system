@@ -21,7 +21,7 @@ mongoose
     }
   )
   .then(() => {
-    app.listen(process.env.port);
+    app.listen(process.env.port, () => { console.log("server running..")});
   })
   .catch((err) => {
     throw Error("Unable to connect " + err);

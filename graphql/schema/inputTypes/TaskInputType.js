@@ -15,6 +15,7 @@ const TaskInputType = new GraphQLInputObjectType({
     assignedTo: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: GraphQLString },
+    status: {type:GraphQLString },
     sprint: { type: new GraphQLNonNull(GraphQLString) },
     bugs: { type: new GraphQLList(GraphQLString) },
   }),

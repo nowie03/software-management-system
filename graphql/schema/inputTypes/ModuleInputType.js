@@ -11,7 +11,7 @@ const ModuleInputType = new GraphQLInputObjectType({
   name: "ModuleInputType",
   description: "Input model for Module creation mutation",
   fields: () => ({
-    projectId: { type: new GraphQLNonNull(GraphQLString) },
+    project: { type: new GraphQLNonNull(GraphQLString) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     startedAt: { type: GraphQLString },
     endsAt: { type: GraphQLString },
